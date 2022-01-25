@@ -1,8 +1,7 @@
 <template>
   <div class="home-search">
     <van-sticky>
-      <van-search placeholder="请输入书籍名或者作者名" shape="round">
-      </van-search>
+      <van-search placeholder="请输入书籍名或者作者名" shape="round" disabled @click="toSearch"/>
       <van-row align="center" class="home-search-icon">
         <van-col :span="12">
           <van-tabs @click="tabSwitch">
@@ -20,13 +19,24 @@
   </div>
   <list-card title="排行榜" class="home-list">
     <template #list>
-      <van-tabs :animated="true" :swipeable="false" >
+      <van-tabs>
         <van-tab v-for="item in ranking.tab" :key="item._id" :title="item.shortTitle">
-          121
           <van-row>
             <van-col :span="12" v-for="item in ranking.list" :key="item._id">
-              <van-image :src="url.img+item.cover"></van-image>
-              {{ item.title }}
+              <div class="list-book flex">
+                <van-image :src="url.img+item.cover" class="book-img" fit="cover"/>
+                <div class="book-info">
+                  <div class="book-info-title van-multi-ellipsis--l2">
+                    {{ item.title }}
+                  </div>
+                  <div class="book-info-author ">
+                    {{ item.author }}
+                  </div>
+                  <div class="book-info-shortIntro">
+                    {{ item.latelyFollower }}个人追书
+                  </div>
+                </div>
+              </div>
             </van-col>
           </van-row>
         </van-tab>
@@ -37,12 +47,13 @@
 </template>
 
 <script setup>
-import {rankingService} from "../../api/ranking";
-import {User, Bookshelf} from '@icon-park/vue-next'
 import GoTop from "../../components/goTop/goTop.vue";
 import ListCard from "./components/homeCard/homeCard.vue";
-import {ref, watch, toRaw} from "vue";
+import {rankingService} from "../../api/ranking";
+import {User, Bookshelf} from '@icon-park/vue-next'
+import {ref} from "vue";
 import {baseUrL} from "../../utils";
+import {useRouter} from 'vue-router'
 
 const homeTabs = [
   {
@@ -66,6 +77,7 @@ const ranking = ref({
   list: []
 })
 const url = baseUrL
+const route = useRouter()
 
 async function getHomeData(name = 'male') {
   const tabData = await rankingService.gender().then()
@@ -75,30 +87,29 @@ async function getHomeData(name = 'male') {
     }
   } = await rankingService.ranking(tabData[name][0]._id).then()
   ranking.value.tab = tabData[name].slice(0, 4)
-  ranking.value.list = books.slice(0, 9)
+  ranking.value.list = books.slice(0, 10)
 }
 
 const tabSwitch = (name) => {
   getHomeData(name)
 }
-
+const toSearch = () => {
+  route.push('/search')
+}
 getHomeData()
 </script>
 
 <style scoped lang="scss">
-::v-deep {
-  .van-tabs__line {
-    background: var(--theme) !important;
-    width: 11%;
-    font-weight: 700;
-  }
+::v-deep(.van-tabs__line) {
+  background: var(--theme) !important;
+  width: 11%;
+  font-weight: 700;
+}
 
-  .van-tab--active {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--theme) !important;
-  }
-
+::v-deep(van-tab--active) {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--theme) !important;
 }
 
 .home-search {
@@ -138,4 +149,34 @@ getHomeData()
   }
 }
 
+.list-book {
+  margin-bottom: 16px;
+
+  .book-img {
+    width: 47px;
+    height: 63px;
+  }
+
+  .book-info {
+    padding-left: 8px;
+    width: 71%;
+
+    .book-info-title {
+      font-size: 17px;
+    }
+
+    .book-info-author, .book-info-shortIntro {
+      margin-top: 4px;
+      color: #b2b2b2;
+      line-height: 1.2;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    .book-info-shortIntro {
+      color: #000;
+      margin-top: 5px;
+    }
+  }
+}
 </style>

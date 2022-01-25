@@ -9,26 +9,27 @@ const routes = [
     {
         path: '/home',
         name: 'home',
-        redirect: '/home/male',
         component: () => import('../views/home/index.vue'),
         meta: {
             title: '首页',
             keepAlive: true
-        },
-        children: [
-            {
-                path: '/home/female',
-                component: () => import('../views/home/female.vue')
-            },
-            {
-                path: '/home/male',
-                component: () => import('../views/home/male.vue')
-            },
-            {
-                path: '/home/picture',
-                component: () => import('../views/home/picture.vue')
-            }
-        ]
+        }
+    },
+    {
+        path: '/search',
+        name: 'search',
+        component: () => import('../views/search/index.vue'),
+        meta: {
+            title: '搜索'
+        }
+    },
+    {
+        path: '/search/list',
+        name: 'searchList',
+        component: () => import('../views/search/list.vue'),
+        meta: {
+            title: '搜索列表'
+        }
     }
 ]
 
