@@ -10,6 +10,7 @@
         </van-col>
         <van-col :span="12" class="home-search-icon-right">
           <user theme="outline" fill="#383634" strokeLinejoin="miter" strokeLinecap="square"
+                @click="toUser"
           />
           <bookshelf theme="outline" fill="#383634" strokeLinejoin="miter" strokeLinecap="square"
           />
@@ -24,7 +25,7 @@
           <van-row>
             <van-col :span="12" v-for="item in ranking.list" :key="item._id">
               <div class="list-book flex">
-                <van-image :src="url.img+item.cover" class="book-img" fit="cover"/>
+                <van-image :src="baseUrL.img+item.cover" class="book-img" fit="cover"/>
                 <div class="book-info">
                   <div class="book-info-title van-multi-ellipsis--l2">
                     {{ item.title }}
@@ -54,6 +55,7 @@ import {User, Bookshelf} from '@icon-park/vue-next'
 import {ref} from "vue";
 import {baseUrL} from "../../utils";
 import {useRouter} from 'vue-router'
+import {getToken} from "../../utils/auth";
 
 const homeTabs = [
   {
@@ -76,7 +78,6 @@ const ranking = ref({
   tab: [],
   list: []
 })
-const url = baseUrL
 const route = useRouter()
 
 async function getHomeData(name = 'male') {
@@ -95,6 +96,14 @@ const tabSwitch = (name) => {
 }
 const toSearch = () => {
   route.push('/search')
+}
+const toUser = () => {
+  const token = getToken()
+  if (token) {
+
+  } else {
+    route.push('/login')
+  }
 }
 getHomeData()
 </script>

@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
-import {getToken} from "../utils/auth";
+import {getToken, isLogin} from "../utils/auth";
+import {Toast} from "vant";
 
 const routes = [
     {
@@ -30,6 +31,23 @@ const routes = [
         meta: {
             title: '搜索列表'
         }
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('../views/user/login.vue'),
+        meta: {
+            title: '用户登录'
+        }
+    },
+    {
+        path: '/user',
+        name: 'user',
+        component: () => import('../views/user/index.vue'),
+        meta: {
+            title: '用户中心',
+            needLogin: true,
+        }
     }
 ]
 
@@ -38,12 +56,12 @@ const router = createRouter({
     routes
 })
 router.beforeEach((to, form, next) => {
-    const {title, isLogin} = to.meta
-    const token = getToken()
+    const {title, needLogin} = to.meta
     if (title) {
         document.title = title
     }
-    if (isLogin && !token) {
+    if (needLogin && !isLogin()) {
+        Toast.fail('暂未登录，请登录后再试')
         next('login')
         return
     }
